@@ -11,7 +11,7 @@ export default defineConfig({
       // Integration tests run against TEST_DATABASE_URL when set; otherwise they are skipped.
       DATABASE_URL: process.env.TEST_DATABASE_URL ?? 'postgresql://test:test@localhost:5432/test',
       KAFKA_ENABLED: 'false',
-      CORS_ORIGINS: 'https://app.bank.com,https://*.partners.bank.com',
+      CORS_ORIGINS: 'https://app.irctc.example,https://*.partners.irctc.example',
     },
   },
 });

@@ -33,6 +33,9 @@ const envSchema = z.object({
   KAFKA_GROUP_ID: z.string().default('user-service-group'),
   OUTBOX_POLL_INTERVAL_MS: z.coerce.number().int().positive().default(1_000),
   OUTBOX_BATCH_SIZE: z.coerce.number().int().positive().default(100),
+
+  // Optional. When unset, rate limiting falls back to per-process memory.
+  REDIS_URL: z.preprocess((v) => (v === '' ? undefined : v), z.string().url().optional()),
 });
 
 const parsed = envSchema.safeParse(process.env);

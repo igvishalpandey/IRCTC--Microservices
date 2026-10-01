@@ -1,12 +1,12 @@
 # user-service
 
-User management for the banking platform. Express 5 + Prisma (PostgreSQL) + Kafka.
+User management service for the IRCTC-clone train booking platform (microservices). Express 5 + Prisma (PostgreSQL) + Kafka.
 
 ## Quick start
 
 ```bash
 cp .env.example .env
-docker compose up -d postgres kafka   # Postgres on :5433, Kafka on :9092
+docker compose up -d postgres kafka redis   # Postgres :5433, Kafka :9092, Redis :6379
 npm ci
 npm run db:generate
 npm run db:migrate:deploy
@@ -54,6 +54,13 @@ marks them published. If Kafka is down, requests still succeed and events are de
 - Payload: `{ eventId, type, occurredAt, data }`. The `event-id` header equals `eventId`.
 - Delivery is **at-least-once** — consumers must dedupe on `eventId`.
 - A Postgres advisory lock ensures only one replica relays at a time, preserving per-user ordering.
+
+## Redis
+
+Optional (`REDIS_URL`). When set, API rate-limit counters live in Redis so limits are shared across replicas;
+when unset, each process counts in memory. If Redis goes down, rate limiting fails open (requests are allowed
+and an error is logged), `/health/ready` reports `degraded` but stays 200, and limiting resumes automatically
+when Redis recovers.
 
 ## Production notes
 

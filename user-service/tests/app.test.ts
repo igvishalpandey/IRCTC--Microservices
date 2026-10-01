@@ -116,19 +116,22 @@ describe('error handling', () => {
 
 describe('CORS', () => {
   it('allows listed origins with credentials and exposes the request id', async () => {
-    const res = await request(app).get('/health/live').set('Origin', 'https://app.bank.com');
-    expect(res.headers['access-control-allow-origin']).toBe('https://app.bank.com');
+    const res = await request(app).get('/health/live').set('Origin', 'https://app.irctc.example');
+    expect(res.headers['access-control-allow-origin']).toBe('https://app.irctc.example');
     expect(res.headers['access-control-allow-credentials']).toBe('true');
     expect(res.headers['access-control-expose-headers']).toContain('X-Request-Id');
   });
 
   it('allows wildcard subdomains', async () => {
-    const res = await request(app).get('/health/live').set('Origin', 'https://acme.partners.bank.com');
-    expect(res.headers['access-control-allow-origin']).toBe('https://acme.partners.bank.com');
+    const res = await request(app).get('/health/live').set('Origin', 'https://acme.partners.irctc.example');
+    expect(res.headers['access-control-allow-origin']).toBe('https://acme.partners.irctc.example');
   });
 
   it('does not treat the wildcard as matching the bare or look-alike domains', async () => {
-    for (const origin of ['https://partners.bank.com', 'https://evil.partners.bank.com.attacker.io']) {
+    for (const origin of [
+      'https://partners.irctc.example',
+      'https://evil.partners.irctc.example.attacker.io',
+    ]) {
       const res = await request(app).get('/health/live').set('Origin', origin);
       expect(res.headers['access-control-allow-origin']).toBeUndefined();
     }
@@ -143,7 +146,7 @@ describe('CORS', () => {
   it('answers preflight requests', async () => {
     const res = await request(app)
       .options('/api/users')
-      .set('Origin', 'https://app.bank.com')
+      .set('Origin', 'https://app.irctc.example')
       .set('Access-Control-Request-Method', 'PATCH');
     expect(res.status).toBe(204);
     expect(res.headers['access-control-allow-methods']).toContain('PATCH');

@@ -18,7 +18,7 @@ describe.skipIf(!hasDb)('users API (integration)', () => {
   });
 
   it('creates a user and records a user.created outbox event atomically', async () => {
-    const res = await request(app).post('/api/users').send({ email: 'ada@bank.com', name: 'Ada' });
+    const res = await request(app).post('/api/users').send({ email: 'ada@example.com', name: 'Ada' });
     expect(res.status).toBe(201);
 
     const events = await prisma.outboxEvent.findMany();
@@ -28,8 +28,8 @@ describe.skipIf(!hasDb)('users API (integration)', () => {
   });
 
   it('returns 409 on duplicate email without writing an event', async () => {
-    await request(app).post('/api/users').send({ email: 'ada@bank.com', name: 'Ada' });
-    const res = await request(app).post('/api/users').send({ email: 'ADA@bank.com', name: 'Ada 2' });
+    await request(app).post('/api/users').send({ email: 'ada@example.com', name: 'Ada' });
+    const res = await request(app).post('/api/users').send({ email: 'ADA@example.com', name: 'Ada 2' });
     expect(res.status).toBe(409);
     expect(await prisma.outboxEvent.count()).toBe(1);
   });
@@ -45,7 +45,7 @@ describe.skipIf(!hasDb)('users API (integration)', () => {
     for (const n of [1, 2, 3]) {
       await request(app)
         .post('/api/users')
-        .send({ email: `u${n}@bank.com`, name: `U${n}` });
+        .send({ email: `u${n}@example.com`, name: `U${n}` });
     }
     const res = await request(app).get('/api/users?page=2&limit=2');
     expect(res.status).toBe(200);

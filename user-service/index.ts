@@ -3,6 +3,7 @@ import { logger } from './utils/logger';
 import { createApp } from './app';
 import prisma from './config/database';
 import { disconnectKafka } from './config/kafka';
+import { disconnectRedis } from './config/redis';
 import { startOutboxRelay, stopOutboxRelay } from './services/outbox.relay';
 import { markShuttingDown } from './routes/health.routes';
 
@@ -39,6 +40,7 @@ const shutdown = async (reason: string, exitCode = 0): Promise<void> => {
     await stopOutboxRelay();
     await disconnectKafka();
     await prisma.$disconnect();
+    await disconnectRedis();
     logger.info('All connections closed');
   } catch (err) {
     logger.error({ err }, 'Error during shutdown');
